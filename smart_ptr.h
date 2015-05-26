@@ -1,12 +1,13 @@
-#ifndef __SMART_PTR_H
-#define __SMART_PTR_H
+#ifndef __SMART_PTR_H__
+#define __SMART_PTR_H__
 
 template<typename T>
 class smart_ptr {
  public:
-  // delcare as explicit to prevent raw pointer p being
-  // implicitly used to construct multiple smart pointers.
+  // Default constructor.
   smart_ptr() = default;
+  // Delcare as explicit to prevent raw pointer p being
+  // implicitly used to construct multiple smart pointers.
   explicit smart_ptr(T* p = NULL)
      : pointer_(p), counts_(new int(1)) {}
   smart_ptr(const smart_ptr<T>& other)
@@ -70,4 +71,4 @@ class smart_ptr {
 
 
 
-#endif /* __SMART_PTR_H */
+#endif /* __SMART_PTR_H__ */
