@@ -14,6 +14,7 @@ class smart_ptr {
     ++*other.counts(); // atomic_increment ?
     counts_ = other.counts();
   }
+  ~smart_ptr() { clear(); }
 
   void reset(T* p) {
     clear();
@@ -26,10 +27,10 @@ class smart_ptr {
   smart_ptr<T>& operator=(const smart_ptr<T>& other) {
     if (this != &other) {
       clear();
+      ++*other.counts(); // atomic_increment ?
+      counts_ = other.counts();
+      pointer_ = other.get();
     }
-    ++*other.counts(); // atomic_increment ?
-    counts_ = other.counts();
-    pointer_ = other.get();
   }
 
   T* operator->() {

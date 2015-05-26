@@ -21,6 +21,7 @@ int main(int argc, char** argv) {
   printf("sp2 ref_num = %d\n", sp2.ref_num());
   printf("sp1 ref_num = %d\n", sp1.ref_num());
   sp1 = sp2;
+  sp3 = sp1;
   printf("sp1 ref_num = %d\n", sp1.ref_num());
   printf("sp2 ref_num = %d\n", sp2.ref_num());
   printf("sp3 ref_num = %d\n", sp3.ref_num());
