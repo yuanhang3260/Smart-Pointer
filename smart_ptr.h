@@ -10,11 +10,19 @@ class smart_ptr {
   // implicitly used to construct multiple smart pointers.
   explicit smart_ptr(T* p = NULL)
      : pointer_(p), counts_(new int(1)) {}
+  // copy constructor
   smart_ptr(const smart_ptr<T>& other)
-     : pointer_(other.get()) {
-    ++*other.counts(); // atomic_increment ?
-    counts_ = other.counts();
+     : pointer_(other.pointer_) {
+    ++*other.counts_; // atomic_increment ?
+    counts_ = other.counts_;
   }
+  // move constructor
+  smart_ptr(smart_ptr<T>&& other)
+     : pointer_(other.pointer_), counts_(other.counts_) {
+    other.pointer_ = NULL;
+    other.counts_ = NULL;
+  }
+
   ~smart_ptr() { clear(); }
 
   void reset(T* p) {
@@ -28,8 +36,8 @@ class smart_ptr {
   smart_ptr<T>& operator=(const smart_ptr<T>& other) {
     if (this != &other) {
       clear();
-      ++*other.counts(); // atomic_increment ?
-      counts_ = other.counts();
+      ++*other.counts_; // atomic_increment ?
+      counts_ = other.counts_;
       pointer_ = other.get();
     }
   }
