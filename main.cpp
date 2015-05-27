@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "iostream"
 #include "smart_ptr.h"
+#include "weak_ptr.h"
 
 using namespace std;
 
