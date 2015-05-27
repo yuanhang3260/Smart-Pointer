@@ -72,7 +72,9 @@ class weak_ptr {
   void clear() {
     if (weak_counts_ && (--*weak_counts_ == 0)) {
       delete weak_counts_;
-      delete counts_;
+      if (counts_ && *counts_ == 0) {
+        delete counts_;
+      }
       ref_pointer_ = NULL;
       counts_ = NULL;
       weak_counts_ = NULL;
