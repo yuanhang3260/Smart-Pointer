@@ -1,24 +1,31 @@
-#ifndef __SMART_PTR_H__
-#define __SMART_PTR_H__
+#ifndef __SHARED_PTR_H__
+#define __SHARED_PTR_H__
+
+template<class T> class weak_ptr;
 
 template<class T>
-class smart_ptr {
+class shared_ptr {
  public:
   // Default constructor.
-  smart_ptr() = default;
+  shared_ptr() = default;
   // Delcare as explicit to prevent raw pointer p being
   // implicitly used to construct multiple smart pointers.
-  explicit smart_ptr(T* p = NULL)
-     : pointer_(p), counts_(new int(1)), weak_counts_(new int(0)) {}
+  explicit shared_ptr(T* p) {
+    if (p != NULL) {
+      pointer_ = p;
+      counts_ = new int(1);
+      weak_counts_ = new int(0);
+    }
+  }
   // copy constructor
-  smart_ptr(const smart_ptr<T>& other):
+  shared_ptr(const shared_ptr<T>& other):
        pointer_(other.pointer_),
        weak_counts_(other.weak_counts_) {
     ++*other.counts_; // atomic_increment ?
     counts_ = other.counts_;
   }
   // move constructor
-  smart_ptr(smart_ptr<T>&& other) :
+  shared_ptr(shared_ptr<T>&& other) :
        pointer_(other.pointer_),
        counts_(other.counts_),
        weak_counts_(other.weak_counts_) {
@@ -27,7 +34,7 @@ class smart_ptr {
     other.weak_counts_ = NULL;
   }
 
-  ~smart_ptr() { clear(); }
+  ~shared_ptr() { clear(); }
 
   void reset(T* p) {
     clear();
@@ -38,7 +45,7 @@ class smart_ptr {
     }
   }
 
-  smart_ptr<T>& operator=(const smart_ptr<T>& other) {
+  shared_ptr<T>& operator=(const shared_ptr<T>& other) {
     if (this != &other) {
       clear();
       ++*other.counts_; // atomic_increment ?
@@ -69,13 +76,14 @@ class smart_ptr {
   }
 
   T* get() const { return pointer_; }
-  int* counts() const { return counts_; }
-  int ref_num() const {
+  int ref_num() const { // not standard API - only for verification
     if (counts_) {
       return *counts_;
     }
     return 0;
   }
+
+  template<class> friend class weak_ptr;
 
  private:
   T* pointer_ = NULL;
@@ -99,4 +107,4 @@ class smart_ptr {
 
 
 
-#endif /* __SMART_PTR_H__ */
+#endif /* __SHARED_PTR_H__ */

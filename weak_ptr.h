@@ -1,7 +1,5 @@
-#ifndef __WEAK_PTR__
-#define __WEAK_PTR__
-
-#include "smart_ptr.h"
+#ifndef __WEAK_PTR_H
+#define __WEAK_PTR_H
 
 template<class T>
 class weak_ptr {
@@ -37,12 +35,12 @@ class weak_ptr {
     }
   }
 
-  weak_ptr<T>& operator=(const smart_ptr<T>& other) {
+  weak_ptr<T>& operator=(const shared_ptr<T>& other) {
     clear();
-    if (other.ref_num() > 0) {
+    if (other.counts_ && *other.counts_ > 0) {
       ref_pointer_ = other.get();
-      counts_ = other.counts();
-      ++*other.weak_counts_;
+      counts_ = other.counts_;
+      ++(*other.weak_counts_);
       weak_counts_ = other.weak_counts_;
     }
   }
@@ -51,10 +49,12 @@ class weak_ptr {
 
   bool expired() const { return *counts_ == 0; }
 
-  smart_ptr<T> lock() const {
-    smart_ptr<T> sp;
+  shared_ptr<T> lock() const {
+    shared_ptr<T> sp;
     if (!expired()) {
       sp.reset(ref_pointer_);
+      ++*counts_;
+      sp.counts_ = counts_;
     }
     return sp; 
   }
@@ -62,7 +62,6 @@ class weak_ptr {
   void reset() {
     clear();
   }
-  
 
  private:
   T* ref_pointer_ = NULL;
@@ -70,11 +69,11 @@ class weak_ptr {
   int* weak_counts_ = NULL; // weak reference count
 
   void clear() {
-    if (weak_counts_ && (--*weak_counts_ == 0)) {
+    if (weak_counts_ && (--*weak_counts_ == 0) &&
+        counts_ && *counts_ == 0) {
+      std::cout << "weak clear " << std::endl;
       delete weak_counts_;
-      if (counts_ && *counts_ == 0) {
-        delete counts_;
-      }
+      delete counts_;
       ref_pointer_ = NULL;
       counts_ = NULL;
       weak_counts_ = NULL;
@@ -83,4 +82,4 @@ class weak_ptr {
 };
 
 
-#endif /* __WEAK_PTR__ */
+#endif /* __WEAK_PTR_H */
