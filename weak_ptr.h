@@ -1,5 +1,5 @@
-#ifndef __WEAK_PTR_H
-#define __WEAK_PTR_H
+#ifndef __WEAK_PTR_H__
+#define __WEAK_PTR_H__
 
 template<class T>
 class weak_ptr {
@@ -82,4 +82,4 @@ class weak_ptr {
 };
 
 
-#endif /* __WEAK_PTR_H */
+#endif /* __WEAK_PTR_H__ */
