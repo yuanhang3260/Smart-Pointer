@@ -45,6 +45,10 @@ class weak_ptr {
     }
   }
 
+  explicit operator bool() {
+    return counts_ && *counts_ > 0;
+  }
+
   int void_count() const { return *counts_; }
 
   bool expired() const { return *counts_ == 0; }

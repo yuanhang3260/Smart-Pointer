@@ -3,21 +3,12 @@
 #include "iostream"
 #include "shared_ptr.h"
 #include "weak_ptr.h"
+#include "unique_ptr.h"
 
 using namespace std;
 
-weak_ptr<int> gw;
-
-void f() {
-  if (auto spt = gw.lock()) { // Has to be copied into a shared_ptr before usage
-    cout << *spt << "\n";
-  }
-  else {
-    cout << "gw is expired\n";
-  }
-}
-
-int main(int argc, char** argv) {
+void test_shared_ptr() {
+  printf("\n==== testing shared_ptr ====\n");
   printf("init sp1\n");
   shared_ptr<int> sp1(new int(5));
   printf("sp1 ref_num = %d\n", sp1.ref_num());
@@ -44,8 +35,21 @@ int main(int argc, char** argv) {
   printf("init sp5\n");
   shared_ptr<int> sp5(std::move(sp4));
   printf("sp5 ref_num = %d\n\n", sp5.ref_num());
+}
 
+weak_ptr<int> gw;
 
+void f() {
+  if (auto spt = gw.lock()) { // Has to be copied into a shared_ptr before usage
+    cout << *spt << "\n";
+  }
+  else {
+    cout << "gw is expired\n";
+  }
+}
+
+void test_weak_ptr() {
+  printf("\n==== testing shared_ptr ====\n");
   // test weak pointer
   {
     shared_ptr<int> sp(new int(42));
@@ -54,6 +58,11 @@ int main(int argc, char** argv) {
   }
  
   f();
+}
+
+int main(int argc, char** argv) {
+  test_shared_ptr();
+  test_weak_ptr();
 
   printf("\n");
   return 0; 
