@@ -58,7 +58,7 @@ void test_weak_ptr() {
     f();
   }
   f();
-  
+
   printf("[end testing weak_ptr]\n");
 }
 
