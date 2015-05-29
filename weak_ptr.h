@@ -67,6 +67,8 @@ class weak_ptr {
     clear();
   }
 
+  template<class> friend class weak_ptr;
+
  private:
   T* ref_pointer_ = NULL;
   int* counts_ = NULL; // strong reference count

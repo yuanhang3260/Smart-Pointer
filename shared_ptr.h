@@ -84,6 +84,7 @@ class shared_ptr {
   }
 
   template<class> friend class weak_ptr;
+  template<class> friend class shared_ptr;
 
  private:
   T* pointer_ = NULL;

@@ -1,5 +1,5 @@
 #
-# C++ Smart Poiner
+# C++ Smart Poiner Types
 #
 # Hang Yuan <yuanhang3260@gmail.com>
 #

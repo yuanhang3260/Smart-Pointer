@@ -10,7 +10,12 @@ class unique_ptr {
  	unique_ptr(const unique_ptr<T>& other) = delete;
  	unique_ptr<T>& operator=(const unique_ptr<T>& other) = delete;
  	// move constructor
- 	unique_ptr(const unique_ptr<T>&& other) : pointer_(other.pointer_) {
+ 	unique_ptr(unique_ptr<T>&& other) : pointer_(other.pointer_) {
+ 		other.pointer_ = NULL;
+ 	}
+ 	unique_ptr<T>& operator=(unique_ptr<T>&& other) {
+ 		release();
+ 		pointer_ = other.pointer_;
  		other.pointer_ = NULL;
  	}
 
@@ -22,6 +27,7 @@ class unique_ptr {
 
  	void release() {
  		if (pointer_) {
+ 			std::cout << "releasing " << *pointer_ << std::endl;
  			delete pointer_;
  			pointer_ = NULL;
  		}

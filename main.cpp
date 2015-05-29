@@ -34,7 +34,8 @@ void test_shared_ptr() {
 
   printf("init sp5\n");
   shared_ptr<int> sp5(std::move(sp4));
-  printf("sp5 ref_num = %d\n\n", sp5.ref_num());
+  printf("sp5 ref_num = %d\n", sp5.ref_num());
+  printf("[end testing shared_ptr]\n");
 }
 
 weak_ptr<int> gw;
@@ -49,8 +50,7 @@ void f() {
 }
 
 void test_weak_ptr() {
-  printf("\n==== testing shared_ptr ====\n");
-  // test weak pointer
+  printf("\n==== testing weak_ptr ====\n");
   {
     shared_ptr<int> sp(new int(42));
     gw = sp;
@@ -58,11 +58,28 @@ void test_weak_ptr() {
   }
  
   f();
+  printf("[end testing weak_ptr]\n");
+}
+
+void test_unique_ptr() {
+  printf("\n==== testing unique_ptr ====\n");
+  unique_ptr<string> up1(new string("hello"));
+  up1.release();
+  up1.reset(new string("hello2"));
+
+  unique_ptr<string> up2(new string("world"));
+  unique_ptr<string> up3(std::move(up2));
+  up1.reset(new string("snoopy"));
+  up1 = std::move(up3);
+  up1.release();
+
+  printf("[end testing unique_ptr]\n");
 }
 
 int main(int argc, char** argv) {
   test_shared_ptr();
   test_weak_ptr();
+  test_unique_ptr();
 
   printf("\n");
   return 0; 
