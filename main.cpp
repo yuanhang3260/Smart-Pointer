@@ -35,6 +35,7 @@ void test_shared_ptr() {
   printf("init sp5\n");
   shared_ptr<int> sp5(std::move(sp4));
   printf("sp5 ref_num = %d\n", sp5.ref_num());
+
   printf("[end testing shared_ptr]\n");
 }
 
@@ -56,8 +57,8 @@ void test_weak_ptr() {
     gw = sp;
     f();
   }
- 
   f();
+  
   printf("[end testing weak_ptr]\n");
 }
 
