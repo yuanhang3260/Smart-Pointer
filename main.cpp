@@ -59,6 +59,15 @@ void test_weak_ptr() {
   }
   f();
 
+  shared_ptr<char> sp(new char('x'));
+  weak_ptr<char> wp(sp);
+  //auto sp2 = wp.lock();
+  sp.reset(new char('y'));
+  auto sp3 = wp.lock();
+  if (!sp3) {
+    printf("wp expired\n");
+  }
+
   printf("[end testing weak_ptr]\n");
 }
 

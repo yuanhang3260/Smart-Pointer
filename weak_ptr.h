@@ -24,6 +24,15 @@ class weak_ptr {
     other.counts_ = NULL;
     other.weak_counts = NULL;
   }
+  // construct from shared_ptr
+  weak_ptr(const shared_ptr<T>& sp) {  
+    if (sp.counts_ && *sp.counts_ > 0) {
+      ++*sp.weak_counts_;
+      weak_counts_ = sp.weak_counts_;
+      ref_pointer_ = sp.pointer_;
+      counts_ = sp.counts_;
+    }
+  }
 
   weak_ptr<T>& operator=(const weak_ptr<T>& other) {
     if (this != &other) {

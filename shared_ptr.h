@@ -36,7 +36,7 @@ class shared_ptr {
 
   ~shared_ptr() { clear(); }
 
-  void reset(T* p) {
+  void reset(T* p = NULL) {
     clear();
     if (p != NULL) {
       pointer_ = p;
