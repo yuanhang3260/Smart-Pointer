@@ -4,20 +4,20 @@
 template<class T>
 class unique_ptr {
  public:
- 	unique_ptr() = default;
- 	unique_ptr(T* p) : pointer_(p) {}
- 	// disallow assignment and copy construct
- 	unique_ptr(const unique_ptr<T>& other) = delete;
- 	unique_ptr<T>& operator=(const unique_ptr<T>& other) = delete;
- 	// move constructor
- 	unique_ptr(unique_ptr<T>&& other) : pointer_(other.pointer_) {
- 		other.pointer_ = NULL;
- 	}
- 	unique_ptr<T>& operator=(unique_ptr<T>&& other) {
- 		release();
- 		pointer_ = other.pointer_;
- 		other.pointer_ = NULL;
- 	}
+  unique_ptr() = default;
+  unique_ptr(T* p) : pointer_(p) {}
+  // disallow assignment and copy construct
+  unique_ptr(const unique_ptr<T>& other) = delete;
+  unique_ptr<T>& operator=(const unique_ptr<T>& other) = delete;
+  // move constructor
+  unique_ptr(unique_ptr<T>&& other) : pointer_(other.pointer_) {
+    other.pointer_ = NULL;
+  }
+  unique_ptr<T>& operator=(unique_ptr<T>&& other) {
+    release();
+    pointer_ = other.pointer_;
+    other.pointer_ = NULL;
+  }
 
  	~unique_ptr() {
  		release();
