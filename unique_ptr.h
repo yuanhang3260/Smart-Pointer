@@ -19,31 +19,31 @@ class unique_ptr {
     other.pointer_ = NULL;
   }
 
- 	~unique_ptr() {
- 		release();
- 	}
+  ~unique_ptr() {
+    release();
+  }
 
- 	T* get() const { return pointer_; }
+  T* get() const { return pointer_; }
 
- 	void release() {
- 		if (pointer_) {
- 			std::cout << "releasing " << *pointer_ << std::endl;
- 			delete pointer_;
- 			pointer_ = NULL;
- 		}
- 	}
+  void release() {
+    if (pointer_) {
+      std::cout << "releasing " << *pointer_ << std::endl;
+      delete pointer_;
+      pointer_ = NULL;
+    }
+  }
 
- 	void reset(T* p) {
- 		release();
- 		pointer_ = p;
- 	}
+  void reset(T* p) {
+    release();
+    pointer_ = p;
+  }
 
- 	explicit operator bool() {
+  explicit operator bool() {
     return pointer_ != NULL;
   }
 
  private:
- 	T* pointer_ = NULL;
+  T* pointer_ = NULL;
 };
 
 #endif /* __UNIQUE_PTR__ */
