@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "iostream"
 #include "shared_ptr.h"
-//#include "weak_ptr.h"
+#include "weak_ptr.h"
 #include "unique_ptr.h"
 
 using namespace std;
@@ -46,40 +46,47 @@ void test_shared_ptr() {
   shared_ptr<int> sp5(std::move(sp4));
   printf("sp5 ref_num = %d\n", sp5.ref_num());
 
+  sp5.reset();
+  shared_ptr<int> sp6(sp5);
+
   printf("[end testing shared_ptr]\n");
 }
 
-//weak_ptr<int> gw;
+weak_ptr<int> gw;
 
-// void f() {
-//   if (auto spt = gw.lock()) { // Has to be copied into a shared_ptr before usage
-//     cout << *spt << "\n";
-//   }
-//   else {
-//     cout << "gw is expired\n";
-//   }
-// }
+void f() {
+  // Has to be copied into a shared_ptr before usage.
+  if (auto spt = gw.lock()) {
+    cout << *spt << "\n";
+  }
+  else {
+    cout << "gw is expired\n";
+  }
+}
 
-// void test_weak_ptr() {
-//   printf("\n==== testing weak_ptr ====\n");
-//   {
-//     shared_ptr<int> sp(new int(42));
-//     gw = sp;
-//     f();
-//   }
-//   f();
+void test_weak_ptr() {
+  printf("\n==== testing weak_ptr ====\n");
+  {
+    shared_ptr<int> sp(new int(42));
+    gw = sp;
+    f();
+  }
+  f();
 
-//   shared_ptr<char> sp(new char('x'));
-//   weak_ptr<char> wp(sp);
-//   //auto sp2 = wp.lock();
-//   sp.reset(new char('y'));
-//   auto sp3 = wp.lock();
-//   if (!sp3) {
-//     printf("wp expired\n");
-//   }
+  shared_ptr<char> sp(new char('x'));
+  weak_ptr<char> wp(sp);
+  //auto sp2 = wp.lock();
+  sp.reset(new char('y'));
+  auto sp3 = wp.lock();
+  if (!sp3) {
+    printf("wp expired\n");
+  }
+  else {
+    printf("*sp3 = %c\n", *sp3);
+  }
 
-//   printf("[end testing weak_ptr]\n");
-// }
+  printf("[end testing weak_ptr]\n");
+}
 
 void test_unique_ptr() {
   printf("\n==== testing unique_ptr ====\n");
@@ -104,7 +111,7 @@ void test_unique_ptr() {
 int main(int argc, char** argv) {
   test_unique_ptr();
   test_shared_ptr();
-  //test_weak_ptr();
+  test_weak_ptr();
 
   printf("\n");
   return 0; 

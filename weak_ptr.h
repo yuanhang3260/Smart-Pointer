@@ -1,5 +1,5 @@
-#ifndef WEAK_PTR_H__
-#define WEAK_PTR_H__
+#ifndef WEAK_POINTER_H__
+#define WEAK_POINTER_H__
 
 #include "shared_ptr.h"
 
@@ -8,68 +8,65 @@ class weak_ptr {
  public:
   weak_ptr() = default;
   ~weak_ptr() { clear(); }
+
   // copy constructor
-  weak_ptr(const weak_ptr<T>& other) :
-    ref_pointer_(other.ref_pointer_),
-    counts_(other.counts_)
-  {
-    ++*other.weak_counts_;
-    weak_counts(other.weak_counts_);
-  }
-  // move constructor
-  weak_ptr(const weak_ptr<T>&& other) :
-    ref_pointer_(other.ref_pointer_),
-    counts_(other.counts_),
-    weak_counts_(other.weak_counts)
-  {
-    other.ref_pointer_ = NULL;
-    other.counts_ = NULL;
-    other.weak_counts = NULL;
-  }
-  // construct from shared_ptr
-  weak_ptr(const shared_ptr<T>& sp) {  
-    if (sp.counts_ && *sp.counts_ > 0) {
-      ++*sp.weak_counts_;
-      weak_counts_ = sp.weak_counts_;
-      ref_pointer_ = sp.pointer_;
-      counts_ = sp.counts_;
+  weak_ptr(const weak_ptr& other) :
+      pointer_(other.pointer_),
+      refs_(other.refs_) {
+    if (refs_) {
+      refs_->weak_count++;
     }
   }
 
-  weak_ptr<T>& operator=(const weak_ptr<T>& other) {
+  // move constructor
+  weak_ptr(const weak_ptr&& other) :
+      pointer_(other.pointer_),
+      refs_(other.refs_) {
+    refs_ = nullptr;
+    other.refs_ = nullptr;
+  }
+
+  // construct from shared_ptr
+  weak_ptr(const shared_ptr<T>& sp) :
+      pointer_(sp.pointer_),
+      refs_(sp.refs_) {
+    if (sp.refs_) {
+      sp.refs_->weak_count++;
+    }
+  }
+
+  weak_ptr& operator=(const weak_ptr& other) {
     if (this != &other) {
       clear();
-      ref_pointer_ = other.ref_pointer_;
-      counts_ = other.counts_;
-      ++*other.weak_counts_;
-      weak_counts_ = other.weak_counts_;
+      pointer_ = other.pointer_;
+      refs_ = other.refs_;
+      if (refs_) {
+        other.refs_->weak_count++;
+      }
     }
   }
 
-  weak_ptr<T>& operator=(const shared_ptr<T>& other) {
+  weak_ptr& operator=(const shared_ptr<T>& sp) {
     clear();
-    if (other.counts_ && *other.counts_ > 0) {
-      ref_pointer_ = other.get();
-      counts_ = other.counts_;
-      ++(*other.weak_counts_);
-      weak_counts_ = other.weak_counts_;
+    pointer_ = sp.pointer_;
+    refs_ = sp.refs_;
+    if (refs_) {
+      sp.refs_->weak_count++;
     }
   }
 
   explicit operator bool() {
-    return counts_ && *counts_ > 0;
+    return refs_ && refs_->count > 0;
   }
 
-  int void_count() const { return *counts_; }
-
-  bool expired() const { return *counts_ == 0; }
+  bool expired() const { return refs_->count <= 0; }
 
   shared_ptr<T> lock() const {
     shared_ptr<T> sp;
     if (!expired()) {
-      sp.reset(ref_pointer_);
-      ++*counts_;
-      sp.counts_ = counts_;
+      sp.reset(pointer_);
+      sp.refs_ = refs_;
+      refs_->count++;
     }
     return sp; 
   }
@@ -81,22 +78,18 @@ class weak_ptr {
   template<class> friend class weak_ptr;
 
  private:
-  T* ref_pointer_ = NULL;
-  int* counts_ = NULL; // strong reference count
-  int* weak_counts_ = NULL; // weak reference count
+  T* pointer_ = nullptr;
+  Ref* refs_ = nullptr;
 
   void clear() {
-    if (weak_counts_ && (--*weak_counts_ == 0) &&
-        counts_ && *counts_ == 0) {
+    if (refs_ && (--(refs_->weak_count) == 0) &&
+        refs_->count == 0) {
       std::cout << "weak clear " << std::endl;
-      delete weak_counts_;
-      delete counts_;
-      ref_pointer_ = NULL;
-      counts_ = NULL;
-      weak_counts_ = NULL;
+      delete refs_;
+      pointer_ = nullptr;
     }
   }
 };
 
 
-#endif /* WEAK_PTR_H__ */
+#endif /* WEAK_POINTER_H__ */

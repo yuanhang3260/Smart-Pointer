@@ -1,5 +1,5 @@
-#ifndef SHARED_PTR_H__
-#define SHARED_PTR_H__
+#ifndef SHARED_POINTER_H__
+#define SHARED_POINTER_H__
 
 #include "smart_ptr_base.h"
 
@@ -16,15 +16,13 @@ class shared_ptr {
   template<class U>
   explicit shared_ptr(U* p) :
       pointer_(p),
-      refs_(new RefImpl<U, default_deleter<U>>(p, default_deleter<U>())),
-      weak_counts_(new int(0)) {
+      refs_(new RefImpl<U, default_deleter<U>>(p, default_deleter<U>())) {
   }
 
   template<class U, class Deleter>
   shared_ptr(U* p, Deleter d) :
       pointer_(p),
-      refs_(new RefImpl<U, Deleter>(p, d)),
-      weak_counts_(new int(0)) {
+      refs_(new RefImpl<U, Deleter>(p, d)) {
   }
 
   ~shared_ptr() { clear(); }
@@ -32,37 +30,35 @@ class shared_ptr {
   // copy constructor
   shared_ptr(const shared_ptr& other) :
       pointer_(other.pointer_),
-      refs_(other.refs_),
-      weak_counts_(other.weak_counts_) {
-    refs_->count++;
+      refs_(other.refs_) {
+    if (refs_) {
+      refs_->count++;
+    }
   }
 
   template<class U>
   shared_ptr(const shared_ptr<U>& other) :
       pointer_(other.pointer_),
-      refs_(other.refs_),
-      weak_counts_(other.weak_counts_) {
-    refs_->count++;
+      refs_(other.refs_) {
+    if (refs_) {
+      refs_->count++;
+    }
   }
 
   // move constructor
   shared_ptr(shared_ptr&& other) :
       pointer_(other.pointer_),
-      refs_(other.refs_),
-      weak_counts_(other.weak_counts_) {
+      refs_(other.refs_) {
     other.pointer_ = nullptr;
     other.refs_ = nullptr;
-    other.weak_counts_ = nullptr;
   }
 
   template<class U>
   shared_ptr(shared_ptr<U>&& other) :
       pointer_(other.pointer_),
-      refs_(other.refs_),
-      weak_counts_(other.weak_counts_) {
+      refs_(other.refs_) {
     other.pointer_ = nullptr;
     other.refs_ = nullptr;
-    other.weak_counts_ = nullptr;
   }
 
   // Copy assignment.
@@ -71,7 +67,6 @@ class shared_ptr {
       clear();
       pointer_ = other.pointer_;
       refs_ = other.refs_;
-      weak_counts_ = other.weak_counts_;
       refs_->count++;  // atomic inc
     }
   }
@@ -83,11 +78,9 @@ class shared_ptr {
 
       pointer_ = other.pointer_;
       refs_ = other.refs_;
-      weak_counts_ = other.weak_counts_;
 
       other.pointer_ = nullptr;
       other.refs_ = nullptr;
-      other.weak_counts_ = nullptr;
     }
   }
 
@@ -97,8 +90,7 @@ class shared_ptr {
     clear();
     if (p) {
       pointer_ = p;
-      refs_ = new RefImpl<T, default_deleter<U>>(p,default_deleter<U>()),
-      weak_counts_ = new int(0);
+      refs_ = new RefImpl<T, default_deleter<U>>(p,default_deleter<U>());
     }
   }
 
@@ -108,7 +100,6 @@ class shared_ptr {
     if (p) {
       pointer_ = p;
       refs_ = new RefImpl<U, Deleter>(p, d);
-      weak_counts_ = new int(0);
     }
   }
 
@@ -150,21 +141,19 @@ class shared_ptr {
  private:
   T* pointer_ = nullptr;
   Ref* refs_ = nullptr;
-  int* weak_counts_ = nullptr;
 
   void clear() {
-    if (refs_ && (--(refs_->count) == 0)) {
+    if (refs_ && (--(refs_->count) <= 0)) {
+      std::cout << "deleting " << *pointer_ << std::endl;
       refs_->destroy();
-      // if (weak_counts_ && *weak_counts_ == 0) {
-      //   delete refs_;
-      //   delete weak_counts_;
-      // }
+      if (refs_->weak_count <= 0) {
+        delete refs_;
+        refs_ = nullptr;
+      }
       pointer_ = nullptr;
-      refs_ = nullptr;
-      weak_counts_ = nullptr;
     }
   }
 };
 
 
-#endif /* SHARED_PTR_H__ */
+#endif /* SHARED_POINTER_H__ */

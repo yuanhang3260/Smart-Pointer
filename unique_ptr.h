@@ -1,5 +1,7 @@
-#ifndef UNIQUE_PTR__
-#define UNIQUE_PTR__
+#ifndef UNIQUE_POINTER__
+#define UNIQUE_POINTER__
+
+#include "smart_ptr_base.h"
 
 template<class T>
 class unique_ptr {
@@ -104,4 +106,4 @@ class unique_ptr {
   Ref* refs_ = nullptr;
 };
 
-#endif /* UNIQUE_PTR__ */
+#endif /* UNIQUE_POINTER__ */
