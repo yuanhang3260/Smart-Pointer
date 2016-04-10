@@ -1,5 +1,7 @@
-#ifndef __WEAK_PTR_H__
-#define __WEAK_PTR_H__
+#ifndef WEAK_PTR_H__
+#define WEAK_PTR_H__
+
+#include "shared_ptr.h"
 
 template<class T>
 class weak_ptr {
@@ -97,4 +99,4 @@ class weak_ptr {
 };
 
 
-#endif /* __WEAK_PTR_H__ */
+#endif /* WEAK_PTR_H__ */
