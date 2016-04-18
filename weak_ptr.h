@@ -55,6 +55,22 @@ class weak_ptr {
     }
   }
 
+  T* operator->() {
+    return pointer_;
+  }
+
+  const T* operator->() const {
+    return pointer_;
+  }
+
+  T& operator*() {
+    return *pointer_;
+  }
+
+  const T& operator*() const {
+    return *pointer_;
+  }
+
   explicit operator bool() {
     return refs_ && refs_->count > 0;
   }

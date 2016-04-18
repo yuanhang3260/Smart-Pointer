@@ -97,6 +97,22 @@ class unique_ptr {
     reset<T>(nullptr);
   }
 
+  T* operator->() {
+    return pointer_;
+  }
+
+  const T* operator->() const {
+    return pointer_;
+  }
+
+  T& operator*() {
+    return *pointer_;
+  }
+
+  const T& operator*() const {
+    return *pointer_;
+  }
+
   explicit operator bool() {
     return pointer_ != nullptr;
   }

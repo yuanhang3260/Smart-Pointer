@@ -110,7 +110,7 @@ class shared_ptr {
   }
 
   const T* operator->() const {
-    return *pointer_;
+    return pointer_;
   }
 
   T& operator*() {
