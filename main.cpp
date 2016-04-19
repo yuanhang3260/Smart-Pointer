@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "iostream"
+#include <iostream>
 #include "shared_ptr.h"
 #include "weak_ptr.h"
 #include "unique_ptr.h"
@@ -14,6 +14,21 @@ struct MyDeleter {
     delete p;
   }
 };
+
+class MyClass {
+ public:
+  MyClass(int v) : value_(v) {}
+  void foo() { printf("foo\n"); }
+  int value() const { return value_; }
+ 
+ private:
+  int value_ = 0;
+};
+
+std::ostream& operator<<(std::ostream &out, const MyClass &obj) {
+  out << "MyClass (value = " << obj.value() << ")";
+  return out;
+}
 
 void test_shared_ptr() {
   printf("\n==== testing shared_ptr ====\n");
@@ -48,6 +63,11 @@ void test_shared_ptr() {
 
   sp5.reset();
   shared_ptr<int> sp6(sp5);
+
+  shared_ptr<MyClass> sp7(new MyClass(5));
+  printf("sp7->value() = %d\n", sp7->value());
+  printf("(*sp7).foo(): ");
+  (*sp7).foo();
 
   printf("[end testing shared_ptr]\n");
 }
