@@ -1,4 +1,4 @@
-####C++ Smart Pointer Type
+#### C++ Smart Pointer Type
 
 A very simple C++ smart pointer (shared_ptr, unique_ptr and weak_ptr) implementation, supporting customized deleter.
 
